@@ -1,6 +1,3 @@
-# pyqt-aosp-rom-builder
-Android ROM Builder Made With PyQT
-
 ![rombuilder](https://github.com/user-attachments/assets/13b4be04-5607-43cd-b905-23bbb0f36221)
 
 # ROM Builder GUI 🧱🛠️
@@ -8,6 +5,9 @@ Android ROM Builder Made With PyQT
 **ROM Builder** is a PyQt5-based graphical tool that simplifies the Android ROM building process.  
 It lets you sync repositories, add local manifests, configure signing keys, and compile ROMs — all through an easy-to-use GUI.
 
+![image](https://github.com/user-attachments/assets/24935930-a5d3-460b-a210-77a138bc2f1f)
+
+[Video preview](https://t.me/munch_chat/64285)
 ---
 
 ## 🚀 Features
@@ -44,7 +44,7 @@ python3 rom_builder.py
 You don't need Python or dependencies to use ROM Builder.
 Just download the prebuilt AppImage from Releases:
 
-👉 Download ROM Builder AppImage
+👉 [Download ROM Builder AppImage](https://github.com/Efeisot/pyqt-aosp-rom-builder/releases/download/v1.0/ROM_Builder-x86_64.AppImage)
 
 Make it executable and run:
 
