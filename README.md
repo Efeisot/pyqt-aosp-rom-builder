@@ -7,7 +7,7 @@ It lets you sync repositories, add local manifests, configure signing keys, and 
 
 ![image](https://github.com/user-attachments/assets/24935930-a5d3-460b-a210-77a138bc2f1f)
 
-[Video preview](https://t.me/munch_chat/64285)
+[Video preview](https://t.me/munch_chat/64288)
 ---
 
 ## 🚀 Features
