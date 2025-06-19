@@ -213,7 +213,6 @@ class RomVersionDialog(QDialog):
     def get_selected_version(self):
         return self.combo.currentText()
 
-# Added empty row
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -292,7 +291,10 @@ class MainWindow(QMainWindow):
         # To change new lines with <br> 
         text = text.replace('\n', '<br>')
         
-        # Apply color format
+        # Apply color format - CHANGE BLUE TO YELLOW
+        if color == 'blue':
+            color = 'yellow'  # Better visibility on dark background
+        
         if color:
             text = f"<font color='{color}'>{text}</font>"
         
@@ -301,6 +303,17 @@ class MainWindow(QMainWindow):
         cursor.insertHtml(text)
         self.textBrowser.setTextCursor(cursor)
         self.textBrowser.ensureCursorVisible()
+
+    def is_repo_available(self):
+        """Check if 'repo' command is available in the system"""
+        try:
+            subprocess.run(["repo", "--version"], 
+                          stdout=subprocess.DEVNULL, 
+                          stderr=subprocess.DEVNULL,
+                          check=True)
+            return True
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            return False
 
     def select_rom_source(self):
         # Rom folder selection
@@ -324,6 +337,15 @@ class MainWindow(QMainWindow):
             self.rom_version = version_dialog.get_selected_version()
             self.append_text(f"Selected Version: {self.rom_version}\n")
             
+            # Check if repo command is available
+            if not self.is_repo_available():
+                QMessageBox.critical(
+                    self, 
+                    "Error", 
+                    "'repo' command not found! Please install repo tool and ensure it's in your PATH."
+                )
+                return
+                
             # To run repo init
             repo_command = self.get_repo_init_command()
             self.run_command(repo_command)
@@ -350,7 +372,7 @@ class MainWindow(QMainWindow):
         ####################################################
         # REPO INIT COMMANDS ACCORDING TO ROM VERSIONS
         ####################################################
-        if "LineageOS" in version:
+        if "lineageos" in version:
             if "20" in version:
                 return "repo init -u https://github.com/LineageOS/android.git -b lineage-20 --git-lfs --depth=1"
             elif "21" in version:
@@ -360,29 +382,29 @@ class MainWindow(QMainWindow):
             elif "22.2" in version:
                 return "repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --depth=1"
         
-        elif "crDroid" in version:
+        elif "crdroid" in version:
             if "14.0" in version:
                 return "repo init -u https://github.com/crdroidandroid/android.git -b 14.0 --git-lfs --depth=1"
             elif "15.0" in version:
                 return "repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1"
         
-        elif "AxionAOSP" in version:
-            if "15 QPR1" in version:
+        elif "axionaosp" in version:
+            if "15 qpr1" in version:
                 return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-22.1 --git-lfs --depth=1"
-            elif "15 QPR2" in version:
+            elif "15 qpr2" in version:
                 return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-22.1 --git-lfs --depth=1"
         
-        elif "RisingOS" in version:
+        elif "risingos" in version:
             if "7.0" in version:
                 return "repo init -u https://github.com/RisingOS-Revived/android -b fifteen --git-lfs --depth=1"
             elif "7.1" in version:
                 return "repo init -u https://github.com/RisingOS-Revived/android -b qpr2 --git-lfs --depth=1"
          
-        elif "MistOS" in version:
+        elif "mistos" in version:
             if "3.5" in version:
                 return "repo init -u https://github.com/Project-Mist-OS/manifest -b 15 --git-lfs --depth=1"
         
-        # Predefined initialization command
+        # Default command if no match
         return "repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --depth=1"
 
     def add_repositories(self):
@@ -392,7 +414,7 @@ class MainWindow(QMainWindow):
         
         file_path, _ = QFileDialog.getOpenFileName(
             self, 
-            "Select local_manifest.xml", 
+            "Select Manifest XML File", 
             "", 
             "XML Files (*.xml)"
         )
@@ -402,11 +424,14 @@ class MainWindow(QMainWindow):
             local_manifests_dir = os.path.join(self.rom_source_dir, ".repo", "local_manifests")
             os.makedirs(local_manifests_dir, exist_ok=True)
             
+            # Get original filename instead of renaming to "device.xml"
+            file_name = os.path.basename(file_path)
+            dest_path = os.path.join(local_manifests_dir, file_name)
+            
             # Copy manifest into folder
-            dest_path = os.path.join(local_manifests_dir, "device.xml")
             shutil.copy(file_path, dest_path)
             
-            self.append_text(f"device.xml copied to: {dest_path}\n")
+            self.append_text(f"{file_name} copied to: {dest_path}\n")
 
     def add_signing_keys(self):
         if not self.rom_source_dir:
@@ -460,8 +485,8 @@ class MainWindow(QMainWindow):
         # Run the build commands
         command = f". build/envsetup.sh && lunch {device} && m bacon otatools target-files-package -j{threads}"
         
-        # To logging text
-        self.append_text(f"$ {command}\n")
+        # To logging text (changed color to yellow)
+        self.append_text(f"$ {command}\n", color='blue')  # Will be converted to yellow in append_text
         
         # Add commands to raw log file
         self.raw_log_buffer.append(f"$ {command}\n")
@@ -480,6 +505,10 @@ class MainWindow(QMainWindow):
             self.process.terminate()
             self.process.waitForFinished()
             
+        # Log the command to the console (changed color to yellow)
+        self.append_text(f"$ {command}\n", color='blue')  # Will be converted to yellow in append_text
+        self.raw_log_buffer.append(f"$ {command}\n")
+        
         self.process.start("bash", ["-c", command])
 
     def save_log_file(self, automatic=False):
