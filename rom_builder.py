@@ -392,7 +392,7 @@ class MainWindow(QMainWindow):
             if "15 qpr1" in version:
                 return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-22.1 --git-lfs --depth=1"
             elif "15 qpr2" in version:
-                return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-22.1 --git-lfs --depth=1"
+                return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-22.2 --git-lfs --depth=1"
         
         elif "risingos" in version:
             if "7.0" in version:
@@ -402,7 +402,7 @@ class MainWindow(QMainWindow):
          
         elif "mistos" in version:
             if "3.5" in version:
-                return "repo init -u https://github.com/Project-Mist-OS/manifest -b 15 --git-lfs --depth=1"
+                return "repo init -u https://github.com/Project-Mist-OS/manifest -b vic --git-lfs --depth=1"
         
         # Default command if no match
         return "repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --depth=1"
