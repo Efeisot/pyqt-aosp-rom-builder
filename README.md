@@ -54,11 +54,13 @@ chmod +x rom_builder-x86_64.AppImage
 ```
 
 ## ✅ Supported ROMs
-- LineageOS 20 / 21 / 22.1 / 22.2
+- LineageOS 20 / 21 / 22.1 / 22.2 / 23.0
 - crDroid 14.0 / 15.0
 - AxionAOSP 15 QPR1 / QPR2
-- RisingOS 7.0 / 7.1
+- RisingOS 6.3 / 7.1
 - MistOS 3.5
+- Matrixx 15 QPR2
+- Infinity-X 15 QPR2
 
 ## 🧱 Credits
 - Deepseek: For entire script, without it, i couldn't have done this project in less than 3-4 hours
