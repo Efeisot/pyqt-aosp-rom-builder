@@ -324,12 +324,13 @@ class MainWindow(QMainWindow):
         uic.loadUi(tmp_file_path, self)
         os.unlink(tmp_file_path)  # Temporary file deletion
         
-        # Set application icon
-        pixmap = QPixmap("rombuilder.png")
-        if not pixmap.isNull():
-            self.iconLabel.setPixmap(pixmap.scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        else:
-            self.append_text("Warning: 'rombuilder.png' not found. Please add it to the script's directory.\n", color='orange')
+        # Remove logo and set text instead
+        self.iconLabel.setText("<b>PyQT Rom Builder</b>")
+        self.iconLabel.setAlignment(Qt.AlignCenter)
+        # Optionally, you can set a larger font size or color if desired
+        # font = self.iconLabel.font()
+        # font.setPointSize(16)
+        # self.iconLabel.setFont(font)
         
         # Connect button signals
         self.pushButton_4.clicked.connect(self.select_rom_source)        # Select Rom Source Folder
@@ -730,7 +731,9 @@ class MainWindow(QMainWindow):
         
         # Check platform for file manager
         try:
-            if sys.platform == "linux":  # Linux and unix-like systems
+            if sys.platform == "darwin": #MacOS shi
+                subprocess.run(["open", self.rom_source_dir])
+            else:  # Linux and unix-like systems
                 subprocess.run(["xdg-open", self.rom_source_dir])
             self.append_text(f"\nOpened ROM source folder: {self.rom_source_dir}\n")
         except Exception as e:
@@ -761,7 +764,9 @@ class MainWindow(QMainWindow):
         
         # Check platform for file manager
         try:
-            if sys.platform == "linux":
+            if sys.platform == "darwin": #MacOS shi
+                subprocess.run(["open", output_path])
+            else:  # Linux and unix-like systems
                 subprocess.run(["xdg-open", output_path])
             self.append_text(f"\nOpened output folder: {output_path}\n")
         except Exception as e:
@@ -770,7 +775,7 @@ class MainWindow(QMainWindow):
     def show_about_dialog(self):
         """Shows an about dialog for the application"""
         QMessageBox.about(self, "About Rom Builder",
-                      "<b>PyQT Rom Builder v1.1</b><br><br>"
+                      "<b>Rom Builder v1.1</b><br><br>"
                       "This application helps to build custom Android ROMs.<br><br>"
                       "Source code available on <a href='https://github.com/efeisot/pyqt-aosp-rom-builder'>GitHub</a>.<br><br>"
                       "Developed by efeisot and licenced with AGPLv3")
