@@ -6,7 +6,7 @@
 
 **Rom Builder** lets you sync repositories, add local manifests, configure signing keys, and compile ROMs — all through an easy-to-use GUI.
 
-![image](https://github.com/user-attachments/assets/91062123-f34f-4065-af63-a62e452c1023)
+![image](https://github.com/user-attachments/assets/398c8d44-c752-4b5b-838e-08de87e2db4b)
 
 [Video preview](https://t.me/munch_chat/64288)
 ---
