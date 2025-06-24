@@ -29,7 +29,7 @@
 You don't need Python or dependencies to use ROM Builder.
 Just download the prebuilt AppImage from Releases:
 
-👉 [Download ROM Builder AppImage](https://github.com/Efeisot/pyqt-aosp-rom-builder/releases/download/v1.1/ROM_Builder-x86_64.AppImage)
+👉 [Download ROM Builder AppImage](https://github.com/Efeisot/pyqt-aosp-rom-builder/releases/download/v1.1.1/ROM_Builder-x86_64.AppImage)
 
 Make it executable and run:
 
