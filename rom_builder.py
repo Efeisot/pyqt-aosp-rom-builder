@@ -775,7 +775,7 @@ class MainWindow(QMainWindow):
     def show_about_dialog(self):
         """Shows an about dialog for the application"""
         QMessageBox.about(self, "About Rom Builder",
-                      "<b>Rom Builder v1.1</b><br><br>"
+                      "<b>Rom Builder v1.2</b><br><br>"
                       "This application helps to build custom Android ROMs.<br><br>"
                       "Source code available on <a href='https://github.com/efeisot/pyqt-aosp-rom-builder'>GitHub</a>.<br><br>"
                       "Developed by efeisot and licenced with AGPLv3")
