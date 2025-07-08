@@ -2,7 +2,7 @@
 
 # ROM Builder GUI 🧱🛠️
 
-**ROM Builder** is a PyQt5-based graphical tool that simplifies the Android ROM building process.  
+**ROM Builder** is a PyQt6-based graphical tool that simplifies the Android ROM building process.  
 
 **Rom Builder** lets you sync repositories, add local manifests, configure signing keys, and compile ROMs — all through an easy-to-use GUI.
 
@@ -43,12 +43,12 @@ chmod +x rom_builder-x86_64.AppImage
 If you want to run or modify the source code:
 
 - Python 3.6+
-- PyQt5
+- PyQt6
 
 Install dependencies:
 
 ```bash
-pip install PyQt5
+pip install PyQt6
 ```
 Run the application:
 ```bash
