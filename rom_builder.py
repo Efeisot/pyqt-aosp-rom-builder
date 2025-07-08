@@ -5,13 +5,13 @@ import tempfile
 import subprocess
 import re
 import html
-from PyQt5 import uic
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QFileDialog,
+from PyQt6 import uic
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QFileDialog,
                              QInputDialog, QMessageBox, QComboBox,
                              QDialog, QVBoxLayout, QLabel,
                              QDialogButtonBox, QGroupBox, QPushButton)
-from PyQt5.QtCore import QProcess, Qt
-from PyQt5.QtGui import QTextCursor, QPixmap
+from PyQt6.QtCore import QProcess, Qt
+from PyQt6.QtGui import QTextCursor, QPixmap
 
 # Function to clear ANSI escape codes
 def clean_ansi_codes(text):
@@ -326,7 +326,7 @@ class MainWindow(QMainWindow):
         
         # Remove logo and set text instead
         self.iconLabel.setText("<b>PyQT Rom Builder</b>")
-        self.iconLabel.setAlignment(Qt.AlignCenter)
+        self.iconLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # Optionally, you can set a larger font size or color if desired
         # font = self.iconLabel.font()
         # font.setPointSize(16)
@@ -352,7 +352,7 @@ class MainWindow(QMainWindow):
         
         # QProcess for managing processes
         self.process = QProcess(self)
-        self.process.setProcessChannelMode(QProcess.MergedChannels)
+        self.process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
         self.process.readyRead.connect(self.handle_output)
         self.process.finished.connect(self.process_finished)
         
@@ -802,4 +802,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
