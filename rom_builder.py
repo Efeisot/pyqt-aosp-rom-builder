@@ -8,10 +8,10 @@ import html
 from PyQt6 import uic
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QFileDialog,
                              QInputDialog, QMessageBox, QComboBox,
-                             QDialog, QVBoxLayout, QLabel,
-                             QDialogButtonBox, QGroupBox, QPushButton)
+                             QDialog, QVBoxLayout,
+                             QDialogButtonBox, QGroupBox)
 from PyQt6.QtCore import QProcess, Qt
-from PyQt6.QtGui import QTextCursor, QPixmap
+from PyQt6.QtGui import QTextCursor
 
 # Function to clear ANSI escape codes
 def clean_ansi_codes(text):
@@ -301,7 +301,7 @@ class RomVersionDialog(QDialog):
         layout.addWidget(group_box)
         
         # Buttons
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
         
@@ -366,7 +366,7 @@ class MainWindow(QMainWindow):
         self.raw_log_buffer = []   # To get raw log output
 
     def start_persistent_shell(self):
-        if self.process.state() == QProcess.Running:
+        if self.process.state() == QProcess.ProcessState.Running:
             self.process.kill()
             self.process.waitForFinished()
         
@@ -393,7 +393,7 @@ class MainWindow(QMainWindow):
     def append_text(self, text, color=None):
         """To insert text into the screen without HTML tags"""
         cursor = self.textBrowser.textCursor()
-        cursor.movePosition(QTextCursor.End)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
 
         if color:
             text = html.escape(text)
@@ -407,14 +407,14 @@ class MainWindow(QMainWindow):
             parts = text.split('\r')
             for i, part in enumerate(parts):
                 if not part and i != len(parts) -1 :
-                    cursor.movePosition(QTextCursor.StartOfBlock)
-                    cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
+                    cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock)
+                    cursor.movePosition(QTextCursor.MoveOperation.EndOfBlock, QTextCursor.MoveMode.KeepAnchor)
                     cursor.removeSelectedText()
                     continue
 
                 if i > 0 or text.startswith('\r'):
-                    cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.MoveAnchor)
-                    cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
+                    cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock, QTextCursor.MoveMode.KeepAnchor)
+                    cursor.movePosition(QTextCursor.MoveOperation.EndOfBlock, QTextCursor.MoveMode.KeepAnchor)
                     cursor.removeSelectedText()
 
                 part_html = html.escape(part).replace('\n', '<br>')
@@ -446,7 +446,7 @@ class MainWindow(QMainWindow):
             
         # Version selection to initialize 
         version_dialog = RomVersionDialog(self)
-        if version_dialog.exec_() == QDialog.Accepted:
+        if version_dialog.exec() == QDialog.DialogCode.Accepted:
             self.rom_version = version_dialog.get_selected_version()
             self.append_text(f"Selected Version: {self.rom_version}\n")
             
@@ -681,7 +681,7 @@ class MainWindow(QMainWindow):
         self.run_command(m_command)
 
     def run_command(self, command):
-        if self.process.state() != QProcess.Running:
+        if self.process.state() != QProcess.ProcessState.Running:
             QMessageBox.warning(self, "Warning", "Shell is not running. Please select a ROM source directory first.")
             return
 
@@ -782,10 +782,10 @@ class MainWindow(QMainWindow):
 
     def stop_process(self):
         """Stop running process"""
-        if self.process.state() == QProcess.Running:
+        if self.process.state() == QProcess.ProcessState.Running:
             self.process.terminate()
             self.process.waitForFinished(3000) # Wait 3 secs
-            if self.process.state() == QProcess.Running:
+            if self.process.state() == QProcess.ProcessState.Running:
                 self.process.kill() # If still running kill it
                 self.process.waitForFinished()
             self.append_text("\n❌ Process stopped by user.\n", color='orange')
@@ -796,7 +796,8 @@ class MainWindow(QMainWindow):
 
     def quit_app(self):
         """Quit the application"""
-        QApplication.instance().quit()
+        if QApplication.instance():
+            QApplication.instance().quit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
