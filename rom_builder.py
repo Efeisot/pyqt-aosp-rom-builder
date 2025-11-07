@@ -280,9 +280,12 @@ class RomVersionDialog(QDialog):
             "Custom...",
             "AxionAOSP 15 QPR1",
             "AxionAOSP 15 QPR2",
+            "AxionAOSP 16 QPR0",
             "crDroid 14.0",
             "crDroid 15.0",
+            "crDroid 16.0",
             "InfinityX 15 QPR2",
+            "InfinityX 16 QPR0",
             "LineageOS 20",
             "LineageOS 21",
             "LineageOS 22.1",
@@ -290,8 +293,10 @@ class RomVersionDialog(QDialog):
             "LineageOS 23.0",
             "Matrixx 15 QPR2",
             "MistOS 3.5",
+            "MistOS 4.2",
             "RisingOS 6.3",
-            "RisingOS 7.1"
+            "RisingOS 7.1",
+            "RisingOS 8.1"
         ]
         self.combo.addItems(versions)
         self.combo.setCurrentIndex(9)  # Predefined selection
@@ -531,22 +536,30 @@ class MainWindow(QMainWindow):
                 return "repo init -u https://github.com/crdroidandroid/android.git -b 14.0 --git-lfs --depth=1"
             elif "15.0" in version:
                 return "repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --depth=1"
+            elif "16.0" in version:
+                return "repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --depth=1"
         
         elif "axionaosp" in version:
             if "15 qpr1" in version:
                 return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-22.1 --git-lfs --depth=1"
             elif "15 qpr2" in version:
                 return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-22.2 --git-lfs --depth=1"
+            elif "16 qpr0" in version:
+                return "repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.0 --git-lfs --depth=1"
         
         elif "risingos" in version:
             if "6.3" in version:
                 return "repo init -u https://github.com/RisingOS-Revived/android -b fifteen --git-lfs --depth=1"
             elif "7.1" in version:
                 return "repo init -u https://github.com/RisingOS-Revived/android -b qpr2 --git-lfs --depth=1"
+            elif "8.1" in version:
+                return "repo init -u https://github.com/RisingOS-Revived/android -b sixteen --git-lfs --depth=1"
          
         elif "mistos" in version:
             if "3.5" in version:
                 return "repo init -u https://github.com/Project-Mist-OS/manifest -b vic --git-lfs --depth=1"
+            elif "4.2" in version:
+                return "repo init -u https://github.com/Project-Mist-OS/manifest -b bp2a --git-lfs --depth=1"
         
         elif "matrixx" in version:
             if "15 qpr2" in version:
@@ -555,6 +568,8 @@ class MainWindow(QMainWindow):
         elif "infinityx" in version:
             if "15 qpr2" in version:
                 return "repo init -u https://github.com/ProjectInfinity-X/android.git -b 15 --git-lfs --depth=1"
+            if "16 qpr0" in version:
+                return "repo init -u https://github.com/ProjectInfinity-X/android.git -b 16 --git-lfs --depth=1"
 
         # Predefined initialization command
         return "repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --depth=1"
