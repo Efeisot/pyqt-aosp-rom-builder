@@ -5,16 +5,17 @@ import tempfile
 import subprocess
 import re
 import html
+from typing import Optional
 from PyQt6 import uic
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QFileDialog,
                              QInputDialog, QMessageBox, QComboBox,
-                             QDialog, QVBoxLayout, QLabel,
-                             QDialogButtonBox, QGroupBox, QPushButton)
+                             QDialog, QVBoxLayout,
+                             QDialogButtonBox, QGroupBox)
 from PyQt6.QtCore import QProcess, Qt
-from PyQt6.QtGui import QTextCursor, QPixmap
+from PyQt6.QtGui import QTextCursor
 
 # Function to clear ANSI escape codes
-def clean_ansi_codes(text):
+def clean_ansi_codes(text: str) -> str:
     ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
     return ansi_escape.sub('', text)
 
@@ -262,8 +263,8 @@ UI_STRING = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 class RomVersionDialog(QDialog):
-    """Spesific dialog for select rom and its version"""
-    def __init__(self, parent=None):
+    """Specific dialog for select rom and its version"""
+    def __init__(self, parent: Optional[QMainWindow] = None) -> None:
         super().__init__(parent)
         self.setWindowTitle("Select ROM Version")
         self.setGeometry(100, 100, 300, 150)
@@ -301,18 +302,18 @@ class RomVersionDialog(QDialog):
         layout.addWidget(group_box)
         
         # Buttons
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
         
         layout.addWidget(button_box)
         self.setLayout(layout)
     
-    def get_selected_version(self):
+    def get_selected_version(self) -> str:
         return self.combo.currentText()
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         
         # To create temporary .ui file
@@ -365,8 +366,8 @@ class MainWindow(QMainWindow):
         self.log_file = ""
         self.raw_log_buffer = []   # To get raw log output
 
-    def start_persistent_shell(self):
-        if self.process.state() == QProcess.Running:
+    def start_persistent_shell(self) -> None:
+        if self.process.state() == QProcess.ProcessState.Running:
             self.process.kill()
             self.process.waitForFinished()
         
@@ -375,14 +376,14 @@ class MainWindow(QMainWindow):
         if not self.process.waitForStarted():
             self.append_text("Failed to start shell process.", color='red')
 
-    def handle_output(self):
+    def handle_output(self) -> None:
         data = self.process.readAll()
         text = bytes(data).decode('utf-8', 'ignore')
         self.raw_log_buffer.append(text)
         clean_text = clean_ansi_codes(text)
         self.append_text(clean_text)
 
-    def process_finished(self, exit_code, exit_status):
+    def process_finished(self, exit_code: int, exit_status: QProcess.ExitStatus) -> None:
         if exit_code == 0:
             self.append_text("\n✅ Process completed successfully!\n")
         else:
@@ -390,10 +391,10 @@ class MainWindow(QMainWindow):
             # To save automatically log file if build fails
             self.save_log_file(automatic=True)
 
-    def append_text(self, text, color=None):
+    def append_text(self, text: str, color: Optional[str] = None) -> None:
         """To insert text into the screen without HTML tags"""
         cursor = self.textBrowser.textCursor()
-        cursor.movePosition(QTextCursor.End)
+        cursor.movePosition(QTextCursor.MoveOperation.End)
 
         if color:
             text = html.escape(text)
@@ -407,14 +408,14 @@ class MainWindow(QMainWindow):
             parts = text.split('\r')
             for i, part in enumerate(parts):
                 if not part and i != len(parts) -1 :
-                    cursor.movePosition(QTextCursor.StartOfBlock)
-                    cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
+                    cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock)
+                    cursor.movePosition(QTextCursor.MoveOperation.EndOfBlock, QTextCursor.MoveMode.KeepAnchor)
                     cursor.removeSelectedText()
                     continue
 
                 if i > 0 or text.startswith('\r'):
-                    cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.MoveAnchor)
-                    cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
+                    cursor.movePosition(QTextCursor.MoveOperation.StartOfBlock, QTextCursor.MoveMode.KeepAnchor)
+                    cursor.movePosition(QTextCursor.MoveOperation.EndOfBlock, QTextCursor.MoveMode.KeepAnchor)
                     cursor.removeSelectedText()
 
                 part_html = html.escape(part).replace('\n', '<br>')
@@ -425,7 +426,7 @@ class MainWindow(QMainWindow):
         self.textBrowser.setTextCursor(cursor)
         self.textBrowser.ensureCursorVisible()
 
-    def select_rom_source(self):
+    def select_rom_source(self) -> None:
         # Rom folder selection
         dir_path = QFileDialog.getExistingDirectory(self, "Select ROM Source Directory")
         if not dir_path:
@@ -446,7 +447,7 @@ class MainWindow(QMainWindow):
             
         # Version selection to initialize 
         version_dialog = RomVersionDialog(self)
-        if version_dialog.exec_() == QDialog.Accepted:
+        if version_dialog.exec() == QDialog.DialogCode.Accepted:
             self.rom_version = version_dialog.get_selected_version()
             self.append_text(f"Selected Version: {self.rom_version}\n")
             
@@ -469,7 +470,7 @@ class MainWindow(QMainWindow):
         else:
             self.append_text("ROM initialization canceled\n", color='orange')
 
-    def initialize_selected_repo(self):
+    def initialize_selected_repo(self) -> None:
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "Please select ROM source directory first!")
             return
@@ -506,7 +507,7 @@ class MainWindow(QMainWindow):
         self.raw_log_buffer.append(f"$ {user_command}\n")
         self.run_command(internal_command)
 
-    def get_repo_init_command(self):
+    def get_repo_init_command(self) -> str:
         """Returns the repo init command according to the ROM version"""
         version = self.rom_version.lower()
         
@@ -558,7 +559,7 @@ class MainWindow(QMainWindow):
         # Predefined initialization command
         return "repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --depth=1"
 
-    def add_repositories(self):
+    def add_repositories(self) -> None:
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "Please select ROM source directory first!")
             return
@@ -584,7 +585,7 @@ class MainWindow(QMainWindow):
             
             self.append_text(f"{file_name} copied to: {dest_path}\n")
 
-    def add_signing_keys(self):
+    def add_signing_keys(self) -> None:
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "Please select ROM source directory first!")
             return
@@ -612,7 +613,7 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to copy signing keys:\n{str(e)}")
 
-    def source_environment(self):
+    def source_environment(self) -> None:
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "Please select ROM source directory first!")
             return
@@ -622,7 +623,7 @@ class MainWindow(QMainWindow):
         self.raw_log_buffer.append(f"$ {command}\n")
         self.run_command(command)
 
-    def lunch_device(self):
+    def lunch_device(self) -> None:
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "Please select ROM source directory first!")
             return
@@ -650,7 +651,7 @@ class MainWindow(QMainWindow):
         self.raw_log_buffer.append(f"$ {command}\n")
         self.run_command(command)
 
-    def start_build(self):
+    def start_build(self) -> None:
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "Please select ROM source directory first!")
             return
@@ -680,15 +681,15 @@ class MainWindow(QMainWindow):
         # Run command
         self.run_command(m_command)
 
-    def run_command(self, command):
-        if self.process.state() != QProcess.Running:
+    def run_command(self, command: str) -> None:
+        if self.process.state() != QProcess.ProcessState.Running:
             QMessageBox.warning(self, "Warning", "Shell is not running. Please select a ROM source directory first.")
             return
 
         # Write command to the shell
         self.process.write(f"{command}\n".encode('utf-8'))
 
-    def save_log_file(self, automatic=False):
+    def save_log_file(self, automatic: bool = False) -> None:
         if not self.raw_log_buffer:
             QMessageBox.information(self, "Information", "No log data to save!")
             return
@@ -723,7 +724,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.critical(self, "Error", f"Failed to save log:\n{str(e)}")
                 self.append_text(f"\n<font color='red'>Failed to save log: {str(e)}</font>\n")
     
-    def look_at_rom_source(self):
+    def look_at_rom_source(self) -> None:
         """Open ROM source folder in file manager"""
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "No ROM source directory selected!")
@@ -739,7 +740,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to open folder:\n{str(e)}")
     
-    def look_at_output(self):
+    def look_at_output(self) -> None:
         """Open the compile output folder in the file manager"""
         if not self.rom_source_dir:
             QMessageBox.warning(self, "Warning", "No ROM source directory selected!")
@@ -772,7 +773,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to open folder:\n{str(e)}")
 
-    def show_about_dialog(self):
+    def show_about_dialog(self) -> None:
         """Shows an about dialog for the application"""
         QMessageBox.about(self, "About Rom Builder",
                       "<b>Rom Builder v1.2</b><br><br>"
@@ -780,23 +781,24 @@ class MainWindow(QMainWindow):
                       "Source code available on <a href='https://github.com/efeisot/pyqt-aosp-rom-builder'>GitHub</a>.<br><br>"
                       "Developed by efeisot and licenced with AGPLv3")
 
-    def stop_process(self):
+    def stop_process(self) -> None:
         """Stop running process"""
-        if self.process.state() == QProcess.Running:
+        if self.process.state() == QProcess.ProcessState.Running:
             self.process.terminate()
             self.process.waitForFinished(3000) # Wait 3 secs
-            if self.process.state() == QProcess.Running:
+            if self.process.state() == QProcess.ProcessState.Running:
                 self.process.kill() # If still running kill it
                 self.process.waitForFinished()
             self.append_text("\n❌ Process stopped by user.\n", color='orange')
             
-    def clear_output(self):
+    def clear_output(self) -> None:
         """Clear the output text browser"""
         self.textBrowser.clear()
 
-    def quit_app(self):
+    def quit_app(self) -> None:
         """Quit the application"""
-        QApplication.instance().quit()
+        if QApplication.instance():
+            QApplication.instance().quit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
